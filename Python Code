@@ -1,0 +1,90 @@
+from datetime import datetime as dt
+import os
+import glob
+import random
+import urllib.request as url
+import bs4
+import json
+import streamlit as st
+
+chat = True
+
+greetIntent = ['hi', 'hello', 'hey', 'good morning', 'hey there']
+dateIntent = ['date', 'tell me date', 'please tell me date']
+timeIntent = ['time', 'tell me time', 'please tell me time']
+musicIntent = ['play music', 'play song', 'music', 'song', 'please play a song', 'please play music']
+newsIntent = ['news', 'today news', 'indian news', ]
+productIntent = ['shopping', 'online shopping', 'flipkart','price']
+news_category_intent = ["sports","politics","entertainment","science"]
+
+
+
+st.set_page_config(
+    page_title='chat app',
+    layout=('wide')
+)
+st.title("Streamlit chat application")
+st.write("Try saying hii,play music")
+
+form = st.form("chat_form")
+msg=form.text_input("Enter your message")
+btn=form.form_submit_button("send message")
+
+if btn:
+    msg=msg.lower()
+
+    if msg in greetIntent:
+        st.write("Hello User")
+
+    elif msg in dateIntent:
+        date = dt.now().date()
+        st.write("Date is ;", date.strftime("%d %B, %Y, %a"))
+
+    elif msg in timeIntent:
+        time = dt.now().time()
+        st.write("Time is ;", time.strftime("%H:%M:%S %p"))
+
+    elif msg in musicIntent:
+        os.chdir(path=r"C:\Users\gshiv\Downloads\song")
+        os.getcwd()
+        songs = glob.glob('*mp3')
+        random_song = random.choice(songs)
+        os.startfile(random_song)
+        st.write("Playing: " + random_song)
+
+    elif msg in newsIntent:
+        st.write("1. Politics")
+        st.write("2. Entertainment")
+        st.write("3. Sports")
+        # form_2 = st.form("news_form")
+        # msg_2 = form_2.text_input("Enter news category...")
+        # btn_2 = form_2.form_submit_button("Send message")
+    elif msg in news_category_intent:
+        # news api
+        path = f"https://newsapi.org/v2/top-headlines?country=in&category={msg}&apiKey=695e07af402f4b119f0703e9b19f4683"
+        response = url.urlopen(path)
+        data = json.load(response)
+        articles = data['articles']
+       
+
+    elif msg in productIntent:
+        product = input("Enter Product Name:")
+        product = product.replace(" ", "+").lower()
+        for k in range(1, 6):
+            path = f"https://www.flipkart.com/search?q={product}&page={k}"
+            response = url.urlopen(path)
+            page = bs4.BeautifulSoup(response, "html.parser")
+            titlelist = page.find_all('div', {'class': '_4rR01T'})
+            pricelist = page.find_all('div', {'class': '_30jeq3 _1_WHN1'})
+            for i in range(len(titlelist)):
+                st.write(titlelist[i].text)
+                st.write(pricelist[i].text)
+                st.write("*" * 30)
+
+
+    elif msg == "bye":
+        st.write("Bye User")
+        chat = False
+
+    else:
+        st.write("I didn't understand your message")
