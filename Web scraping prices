@@ -1,0 +1,14 @@
+Web Scraing Fundamentals with the example of extracting info about electronic devices from shopping site named as flipkart.
+
+  product = input("Enter Product Name:")
+        product = product.replace(" ", "+").lower()
+        for k in range(1, 6):
+            path = f"https://www.flipkart.com/search?q={product}&page={k}"
+            response = url.urlopen(path)
+            page = bs4.BeautifulSoup(response, "html.parser")
+            titlelist = page.find_all('div', {'class': '_4rR01T'})
+            pricelist = page.find_all('div', {'class': '_30jeq3 _1_WHN1'})
+            for i in range(len(titlelist)):
+                st.write(titlelist[i].text)
+                st.write(pricelist[i].text)
+                st.write("*" * 30)
